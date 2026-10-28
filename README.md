@@ -1,6 +1,6 @@
 # AirPulse agent skills
 
-Agent skills from [AirPulse](https://airpulse.ai) for Claude Code, Codex, Cursor and the other agents that the [skills](https://skills.sh) installer supports.
+Agent skills from [AirPulse](https://airpulse.ai/?utm_source=github&utm_medium=referral&utm_campaign=airpulse-site-review&utm_content=home) for Claude Code, Codex, Cursor and the other agents that the [skills](https://skills.sh) installer supports.
 
 ```bash
 npx skills add airmeet/airpulse-skills
@@ -54,7 +54,7 @@ Keep the token out of your repository. The skill checks the connection first and
 
 ### Requirements
 
-An AirPulse account with the MCP enabled, Python 3.9 or newer, and optionally Chrome or Edge.
+An AirPulse account with the MCP enabled, Python 3.9 or newer, and optionally Chrome or Edge. Learn more about the [AirPulse MCP](https://airpulse.ai/product/mcp?utm_source=github&utm_medium=referral&utm_campaign=airpulse-site-review&utm_content=mcp).
 
 ### Update or remove
 

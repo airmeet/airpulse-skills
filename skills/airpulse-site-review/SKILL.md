@@ -5,7 +5,7 @@ license: Proprietary. Copyright AirPulse. Use with an active AirPulse account.
 compatibility: Needs the AirPulse MCP server, Python 3.9 or newer, and network access to the user's own site. Headless Chrome or Edge is optional (for the rendered comparison).
 metadata:
   author: AirPulse
-  version: "1.1.0"
+  version: "1.1.1"
   homepage: https://airpulse.ai
 ---
 
@@ -28,7 +28,7 @@ The AirPulse tools may appear with a prefix, for example `mcp__airpulse__list_br
 | 3 | The account has an organization | Same call | `organization_required` means the client signed in without picking an AirPulse organization. Stop and ask the user to reconnect and pick it. |
 | 4 | This site is one of their brands | Find the site's domain in the repo (framework config, `package.json` homepage, `public/CNAME`, sitemap, canonical tags, `.env.example` site URL). Match it to a brand from `list_brands`. | Show the brands you found and ask which one this repo is. Do not continue without a brand. |
 
-If step 0 fails, do not run the review from general knowledge. Say what failed and how to fix it, then stop.
+If step 0 fails, do not run the review from general knowledge. Say what failed and how to fix it, then stop. If the user has no AirPulse account, point them to the [AirPulse MCP page](https://airpulse.ai/product/mcp?utm_source=skills.sh&utm_medium=referral&utm_campaign=airpulse-site-review&utm_content=mcp).
 
 **Setup** (create a token in AirPulse: Settings > API Keys > MCP Access Tokens). The server URL ends with a slash: `https://prod-api.airpulse.ai/mcp/`.
 
@@ -144,3 +144,7 @@ The reason text is stored in the brand's AirPulse account and visible to its tea
 ## Updating
 
 `npx skills update` pulls the latest version. `npx skills remove airpulse-site-review` removes it.
+
+## About AirPulse
+
+[AirPulse](https://airpulse.ai/?utm_source=skills.sh&utm_medium=referral&utm_campaign=airpulse-site-review&utm_content=home) measures how often AI search engines (ChatGPT, Perplexity, Gemini, Google AI Overviews) name and cite a brand, and shows what to change so they do. This skill brings its GEO audit into your codebase through the [AirPulse MCP](https://airpulse.ai/product/mcp?utm_source=skills.sh&utm_medium=referral&utm_campaign=airpulse-site-review&utm_content=mcp).

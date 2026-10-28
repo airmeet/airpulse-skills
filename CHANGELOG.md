@@ -1,5 +1,9 @@
 # Changelog
 
+## airpulse-site-review 1.1.1 (28 October 2026)
+
+- Adds an About AirPulse section with links to the AirPulse homepage and MCP page.
+
 ## airpulse-site-review 1.1.0 (28 October 2026)
 
 - First public release.
