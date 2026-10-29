@@ -10,7 +10,10 @@ npx skills add airmeet/airpulse-skills
 
 Your coding agent reviews your website's code, page by page, for what AI search engines need: pages they can fetch, understand, trust and quote. It reads your AirPulse GEO audit through the AirPulse MCP, confirms each finding in your source code, runs 124 code-level checks, and proposes fixes as diffs in the right files.
 
-Then ask your agent: *"Review this site for AI search with AirPulse."*
+Then ask your agent either of these:
+
+- *"I am creating this new page. Is it ready for GEO and SEO? If not, what should I change?"* The agent builds the page locally, runs the checks for its page type and the launch checks (canonical, sitemap, internal links, robots, llms.txt, share image, duplicates, facts that match the rest of your site), compares it with what ChatGPT, Perplexity and Gemini answer and cite today for the buyer questions you track in AirPulse, and gives a verdict (Ready, Ready after fixes, Not ready) with the fixes as diffs.
+- *"Review this site for AI search with AirPulse."* The agent confirms every finding in your AirPulse GEO audit against your code and proposes fixes.
 
 | Area | What it checks |
 |---|---|

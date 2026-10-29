@@ -660,7 +660,7 @@ def path_allowed(rules: list[tuple[str, str]], path: str) -> bool:
     return best is None or best[1] == "allow"
 
 
-def crawler_access(groups, bot: str) -> dict:
+def crawler_access(groups, bot: str, extra_paths: list[str] | None = None) -> dict:
     name = bot.lower()
     own = [g for g in groups if name in g[0]]
     match = own or [g for g in groups if "*" in g[0]]
@@ -669,12 +669,15 @@ def crawler_access(groups, bot: str) -> dict:
     page = path_allowed(rules, "/airpulse-sample-page")
     disallowed = [v for k, v in rules if k == "disallow" and v]
     status = "BLOCKED" if not (root and page) else "RESTRICTED" if disallowed else "ALLOWED"
-    return {"bot": bot, "status": status, "root_allowed": root, "pages_allowed": page,
-            "group": "own" if own else "*" if match else "none",
-            "disallowed_paths": disallowed[:20]}
+    out = {"bot": bot, "status": status, "root_allowed": root, "pages_allowed": page,
+           "group": "own" if own else "*" if match else "none",
+           "disallowed_paths": disallowed[:20]}
+    if extra_paths:
+        out["paths"] = {pth: path_allowed(rules, pth) for pth in extra_paths}
+    return out
 
 
-def site_facts(base: str, max_sitemaps: int = 50) -> dict:
+def site_facts(base: str, max_sitemaps: int = 50, check_paths: list[str] | None = None) -> dict:
     base = base.rstrip("/")
     host = urlparse(base).netloc.lower().removeprefix("www.")
     out: dict = {"site": base}
@@ -684,7 +687,7 @@ def site_facts(base: str, max_sitemaps: int = 50) -> dict:
     out["robots_txt_content_type"] = hdr.get("content-type")
     out["robots_txt_is_html"] = is_html
     groups = parse_robots(robots) if st == 200 and not is_html else []
-    out["crawlers"] = [crawler_access(groups, b) for b in AI_CRAWLERS] if st == 200 and not is_html else []
+    out["crawlers"] = [crawler_access(groups, b, check_paths) for b in AI_CRAWLERS] if st == 200 and not is_html else []
     out["crawl_delays"] = re.findall(r"(?im)^\s*crawl-delay:\s*(\S+)", robots or "")
     out["sitemaps_in_robots"] = re.findall(r"(?im)^\s*sitemap:\s*(\S+)", robots or "")
     for name in ("llms.txt", "llms-full.txt"):
@@ -724,6 +727,9 @@ def site_facts(base: str, max_sitemaps: int = 50) -> dict:
                       "distinct_lastmods": len(set(lastmods)), "latest_lastmod": max(lastmods) if lastmods else None,
                       "off_host_urls": sum(1 for u in urls if urlparse(u).netloc.lower().removeprefix("www.") != host),
                       "sample": urls[:50]}
+    if check_paths:
+        listed = {urlparse(u).path.rstrip("/") or "/" for u in urls}
+        out["paths_in_sitemap"] = {pth: (pth.rstrip("/") or "/") in listed for pth in check_paths}
     return out
 
 
@@ -764,6 +770,8 @@ def main() -> int:
     ap.add_argument("inputs", nargs="*", help="URLs, .html files or folders of built HTML")
     ap.add_argument("--base", help="site origin, e.g. https://example.com (for files read from disk and link classification)")
     ap.add_argument("--site", help="also report robots.txt, llms.txt, agents.md and sitemaps for this origin")
+    ap.add_argument("--check-path", action="append", default=[], metavar="/route",
+                    help="with --site: report whether each crawler may fetch this path and whether the live sitemap lists it (repeatable)")
     ap.add_argument("--rendered", action="store_true",
                     help="load each URL in headless Chrome or Edge and compare it with the server HTML")
     ap.add_argument("--max-pages", type=int, default=100, help="stop after this many pages (default 100)")
@@ -775,7 +783,7 @@ def main() -> int:
     if not args.inputs and not args.site:
         ap.error("give at least one URL, file or folder, or --site")
     if args.site:
-        print(json.dumps({"kind": "site", **site_facts(args.site)}, ensure_ascii=False), flush=True)
+        print(json.dumps({"kind": "site", **site_facts(args.site, check_paths=args.check_path)}, ensure_ascii=False), flush=True)
     chrome = find_chrome() if args.rendered else None
     host = urlparse(args.base or args.site or "").netloc
     texts: list[tuple[str, str]] = []

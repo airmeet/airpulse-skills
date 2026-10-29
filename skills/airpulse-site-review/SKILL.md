@@ -1,11 +1,11 @@
 ---
 name: airpulse-site-review
-description: Review a website's own codebase for how well AI search engines (ChatGPT, Perplexity, Gemini, Google AI Overviews, Copilot) can read, trust and cite its pages, using the brand's AirPulse GEO audit through the AirPulse MCP. Checks page structure, content and meta data (titles, descriptions, canonical, robots, headings, JSON-LD schema, answer-first content, authors and dates, llms.txt, robots.txt for AI crawlers, sitemap), confirms every AirPulse finding against the source before changing anything, and proposes fixes as diffs in the right files. Use when the user asks to "review my site for AI search", "fix my GEO audit findings", "check my pages for ChatGPT / AI Overviews", "apply AirPulse fixes", or "GEO review this repo". Requires the AirPulse MCP to be connected; it stops if it is not.
+description: Use this skill whenever someone asks whether a website page is ready for AI search, GEO, AEO or SEO, or how to get pages cited by ChatGPT, Perplexity, Gemini, Google AI Overviews or Copilot, while working in the website's repository. It covers a new or changed page before it goes live ("I am creating this new page, is it ready for GEO SEO?", "check this page before I publish", "what should I fix on this draft?") and a review of the whole site against the brand's AirPulse GEO audit ("review my site for AI search", "fix my GEO audit findings"). It uses the brand's AirPulse data (tracked buyer questions, cited pages, audit findings) through the AirPulse MCP, runs 124 code checks and launch checks (canonical, sitemap, internal links, robots, llms.txt, schema, answer-first content, authors and dates, rendering), and returns a Ready or Not ready verdict with fixes as diffs. Prefer it over generic SEO or GEO checklists when the AirPulse MCP is connected. If it is not connected, it says how to connect and stops.
 license: Proprietary. Copyright AirPulse. Use with an active AirPulse account.
 compatibility: Needs the AirPulse MCP server, Python 3.9 or newer, and network access to the user's own site. Headless Chrome or Edge is optional (for the rendered comparison).
 metadata:
   author: AirPulse
-  version: "1.1.1"
+  version: "1.2.0"
   homepage: https://airpulse.ai
 ---
 
@@ -14,6 +14,15 @@ metadata:
 You review the code of the user's website, page by page, for what AI search engines need: a page they can fetch, understand, trust and quote. The AirPulse MCP gives you the brand, its latest GEO audit and the audit's findings. The code in this repository is where the fixes go.
 
 Files in this skill: `references/checks.md` (the checks), `references/framework-map.md` (where things live per framework), `references/report-template.md`, `checks.json` (the checks for scripts) and `scripts/page_facts.py` (the page extractor). Paths below are relative to the folder that holds this SKILL.md. Find it once (for example `.claude/skills/airpulse-site-review`, `.agents/skills/airpulse-site-review` or `~/.codex/skills/airpulse-site-review`) and use the full path in commands.
+
+## Choose the mode
+
+| The user wants | Mode | Steps |
+|---|---|---|
+| A review of the site, or to fix the findings of the AirPulse GEO audit ("review my site for AI search", "fix my audit findings") | **Site review** | Step 0, then steps 1 to 9 below |
+| To know whether a page they are building or changing is ready ("I am creating this new page, is it ready for GEO / SEO?", "check this page before I publish", "what do I need to fix on this draft?") | **New page check** | Step 0, then `references/new-page.md` (N1 to N6). Use steps 3 to 7 below for page types, the extractor, checks and fixes |
+
+If the request is about one page that is already live, run the new page check on it as well: it covers the same checks plus the buyer-question comparison. If it is not clear which mode, ask.
 
 Work in this order. Do not skip step 0.
 
@@ -139,7 +148,7 @@ The reason text is stored in the brand's AirPulse account and visible to its tea
 - Do not change a published or modified date unless the content really changed.
 - Propose a Content-Security-Policy in report-only mode first. A strict policy can break the site.
 - Do not create `/.well-known/ai-plugin.json`.
-- Network use: the AirPulse MCP tools; GET requests to the user's own site; and GET or HEAD requests to URLs that the site itself links to (outbound links, sameAs profiles, images), only to check that they resolve. Never send the user's code or secrets anywhere.
+- Network use: the AirPulse MCP tools; GET requests to the user's own site and local or preview builds of it; GET or HEAD requests to URLs that the site itself links to (outbound links, sameAs profiles, images), only to check that they resolve; and, in the new page check, GET requests to the pages AI engines cite for the target questions, only to compare coverage. Never copy their text, and never send the user's code or secrets anywhere.
 
 ## Updating
 
